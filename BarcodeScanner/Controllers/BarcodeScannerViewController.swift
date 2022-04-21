@@ -18,6 +18,9 @@ import UIKit
         "M1DOE/JOHN             UVWXYZ INKBOGCUS2356 111C011A0001 35D>5180OO    BCUS             2A             0 CUS                       N 21000006296         ",
     ]
     
+    let barcodeReader = BarcodeReader()
+    var validationArray = [String]()
+    
     var parentVC = HomeViewController()
     var isPortraitDefaultOrientarion = true
     var extractedStringFromBarcode = ""
@@ -107,14 +110,14 @@ import UIKit
             debugPrint("❌ ERROR: UNABLE TO GET IMAGE FROM SAMPLE BUFFER ❌")
             return
         }
-        if let barcode = session.extractDataFromBarcode(fromFrame: frame, for: scannerContext) {
+        if let barcode = barcodeReader.extractDataFromBarcode(fromFrame: frame, for: scannerContext) {
             DispatchQueue.main.async { [self] in
                 self.dictionaryFromBarcodeData = session.process2DBarcodeStringDataInFormatM(from: barcode)
                 print("🔍 EXTRACTED DICTIONARY 🔍 \n\(self.dictionaryFromBarcodeData)")
                 print("🔍 EXTRACTED BARCODE STRING (WHATS IN BETWEEN ><) 🔍 \n>\(barcode)<")
                 self.example2DStrings.contains(barcode) ? print("✅ STRINGS MATCH ✅") : print("❌ STRINGS DON'T MATCH ❌")
-                session.validationArray.append(barcode)
-                if session.validateBarcodeReading() {
+                self.validationArray.append(barcode)
+                if barcodeReader.validateBarcodeReading(with: self.validationArray) {
                     self.captureSession.stopRunning()
                     parentVC.parsedData = self.dictionaryFromBarcodeData
                     self.navigationController?.popViewController(animated: true)

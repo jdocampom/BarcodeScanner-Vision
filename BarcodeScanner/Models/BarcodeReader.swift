@@ -16,9 +16,7 @@ enum ScannerContext {
 @objc class BarcodeReader: NSObject {
     
     let sequenceHandler = VNSequenceRequestHandler()
-    
-    var validationArray = [String]()
-    
+        
     func extractDataFromBarcode(fromFrame frame: CVImageBuffer, for context: ScannerContext = .boardingPass) -> String? {
         let barcodeRequest = VNDetectBarcodesRequest()
         var contextSymbologies = [VNBarcodeSymbology]()
@@ -53,12 +51,13 @@ enum ScannerContext {
         return dictionary
     }
     
-    func validateBarcodeReading() -> Bool {
-        print("⚠️ STARTING VALIDATION WITH ARRAY ⚠️ \n\(validationArray)")
+    func validateBarcodeReading(with array: [String]) -> Bool {
+        print("⚠️ STARTING VALIDATION ⚠️")
+        print("⚠️ VALIDATION ARRAY LENGTH: \(array.count) ⚠️")
         var didPassValidation = false
-        if validationArray.count > 10 {
-            let testBatch = validationArray.suffix(5)
-            didPassValidation = testBatch.dropFirst().allSatisfy({ $0 == validationArray.first })
+        if array.count > 10 {
+            let testBatch = array.suffix(5)
+            didPassValidation = testBatch.dropFirst().allSatisfy({ $0 == array.first })
             print("✅ PASSED VALIDATION ✅")
             return didPassValidation
         } else {
