@@ -29,12 +29,12 @@ import UIKit
     // MARK: - Barcode Scanner View Controller Lifecycle Methods
     
     /// Called immediately before any BarcodeScannerViewControllerinstance is deallocated from memory.
-//    deinit {
-//        self.barcodeReader.extractedStringFromBarcode = ""
-//        self.barcodeReader.dictionaryFromBarcodeData = [String: String]()
-//        self.barcodeReader.captureSession.stopRunning()
-//        print("BarcodeScannerViewController HAS BEEN DEINITIALISED")
-//    }
+    deinit {
+        self.barcodeReader.extractedStringFromBarcode = ""
+        self.barcodeReader.dictionaryFromBarcodeData = [String: String]()
+        self.barcodeReader.captureSession.stopRunning()
+        print("BarcodeScannerViewController HAS BEEN DEINITIALISED")
+    }
     
     /// Controls the attributes of the status bar when this view controller is shown.
     @objc override var preferredStatusBarStyle : UIStatusBarStyle {
