@@ -94,10 +94,11 @@ import UIKit
                 print("🔍 EXTRACTED DICTIONARY 🔍 \n\(self.dictionaryFromBarcodeData)")
                 print("🔍 EXTRACTED BARCODE STRING (WHATS IN BETWEEN ><) 🔍 \n>\(barcode)<")
                 example2DString == barcode ? print("✅ STRINGS MATCH ✅") : print("❌ STRINGS DON'T MATCH ❌")
-                let alert = UIAlertController(title: "Detected Barcode", message: barcode, preferredStyle: .alert)
-                let action = UIAlertAction(title: "Dismiss", style: .default)
-                alert.addAction(action)
-                self.present(alert, animated: true)
+                self.performSegue(withIdentifier: "barcodeScannedSuccesfully", sender: self)
+//                let alert = UIAlertController(title: "Detected Barcode", message: barcode, preferredStyle: .alert)
+//                let action = UIAlertAction(title: "Dismiss", style: .default)
+//                alert.addAction(action)
+//                self.present(alert, animated: true)
             }
         }
     }
@@ -107,15 +108,13 @@ import UIKit
         self.navigationController?.popViewController(animated: true)
     }
     
-
-    /*
     // MARK: - Navigation
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+        if segue.identifier == "barcodeScannedSuccesfully" {
+            let destination = segue.destination as! HomeViewController
+            destination.parsedData = self.dictionaryFromBarcodeData
+        }
     }
-    */
 
 }
