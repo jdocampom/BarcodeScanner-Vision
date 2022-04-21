@@ -15,7 +15,7 @@ import UIKit
     @IBOutlet weak var scanButton: UIButton!
     
     /// Dictionary that populates the tableView. By default it contains all the keys and empty strings as the value for each key.
-    public var parsedData: [String: String] = [
+    lazy var parsedData: [String: String] = [
         "format"                    : "",
         "passenger_name"            : "",
         "e_ticket_indicator"        : "",
@@ -34,7 +34,7 @@ import UIKit
 // MARK: - View Controller Lifecycle Methods
 
     /// Called after the view has been loaded.
-    override func viewDidLoad() {
+    @objc override func viewDidLoad() {
         super.viewDidLoad()
         self.tableView.delegate = self
         self.tableView.dataSource = self
@@ -72,7 +72,7 @@ import UIKit
 extension HomeViewController {
     
     /// Passes parsedData to ScannerViewContrloller for further actions. Triggered during segue unwinding.
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    @objc override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
          if segue.identifier == "scannerButtonTapped" {
              let destination = segue.destination as! BarcodeScannerViewController
              destination.dictionaryFromBarcodeData = self.parsedData

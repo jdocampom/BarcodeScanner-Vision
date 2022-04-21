@@ -132,7 +132,7 @@ enum ScannerContext {
     /// - Parameter string: String contents of a 2D barcode. Only Aztec, PDF417 or QR are currently supported.
     /// - Returns: String: String dictionary with a human-readable representation of the string contents of a 2D barcode. This dictionary
     /// will be used to populate the main TableView.
-    func process2DBarcodeStringDataInFormatM(from string: String) -> [String: String]  {
+    @objc func process2DBarcodeStringDataInFormatM(from string: String) -> [String: String]  {
         let formattedString = string.trimmingCharacters(in: .whitespaces).uppercased()
         var dictionary = [String: String]()
         var range = (startIndex: 0, endIndex: 0)
@@ -150,7 +150,7 @@ enum ScannerContext {
     /// Checks if the last 5 elements of a given array are identical given that this array has more than 10 elements.
     /// - Parameter array: Array that contains the string representation of the barcodes scanned.
     /// - Returns: Boolean flag that allows either to carry on with the application or retry scanning automatically.
-    func validateBarcodeReading(with array: [String]) -> Bool {
+    @objc func validateBarcodeReading(with array: [String]) -> Bool {
         print("⚠️ STARTING VALIDATION ⚠️")
         print("VALIDATION ARRAY LENGTH: \(array.count)")
         var didPassValidation = false

@@ -29,7 +29,7 @@ import UIKit
     // MARK: - Barcode Scanner View Controller Lifecycle Methods
     
     /// Called immediately before any BarcodeScannerViewControllerinstance is deallocated from memory.
-    deinit {
+    @objc deinit {
         self.barcodeReader.extractedStringFromBarcode = ""
         self.barcodeReader.dictionaryFromBarcodeData = [String: String]()
         self.barcodeReader.captureSession.stopRunning()
@@ -54,7 +54,7 @@ import UIKit
     }
     
     /// Called after the view has been loaded.
-    override func viewDidLoad() {
+    @objc override func viewDidLoad() {
         super.viewDidLoad()
         self.addPreviewLayer()
         self.preview.frame = self.previewLayer.safeAreaLayoutGuide.layoutFrame
@@ -88,7 +88,7 @@ import UIKit
     }
     
     /// Puts the Core Animation layer that displays the video on top of `previewLayer` so it's visible to the user.
-    @objc private func addPreviewLayer() {
+    @objc func addPreviewLayer() {
         self.previewLayer.layer.addSublayer(self.preview)
     }
     
