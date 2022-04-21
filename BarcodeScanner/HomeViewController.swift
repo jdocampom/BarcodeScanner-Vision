@@ -64,7 +64,7 @@ extension HomeViewController {
     
     @objc func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "parsedDataCell", for: indexPath) as! ParsedDataCell
-        cell.keyLabel.text = Array(parsedData.keys)[indexPath.row].capitalized.replacingOccurrences(of: "_", with: " ")
+        cell.keyLabel.text = Array(parsedData.keys)[indexPath.row].capitalized.replacingOccurrences(of: "_", with: " ").replacingOccurrences(of: "Iata", with: "IATA").replacingOccurrences(of: "Pnr", with: "PNR")
         cell.valueTextField.text = Array(parsedData.values)[indexPath.row].uppercased()
 //        cell.keyLabel.text = "format".capitalized
 //        cell.valueTextField.text = "DOE/MRJOHN".uppercased()
