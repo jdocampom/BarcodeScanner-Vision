@@ -37,6 +37,8 @@ enum ScannerContext {
     var captureSession = AVCaptureSession()
     /// A capture output that records video and provides access to video frames for processing.
     var videoOutput = AVCaptureVideoDataOutput()
+    /// Parent View Controller. In this case, it is HomeViewController.
+    lazy var parentVC = BarcodeScannerViewController()
     /// A Core Animation layer that displays the video as it’s captured by the device's Wide Angle camera.
     /// Neither Telephoto or Ultra Wide Angle cameras are currently supported due to compatibility reasons.
     lazy var preview: AVCaptureVideoPreviewLayer = {
@@ -45,9 +47,6 @@ enum ScannerContext {
         return preview
     }()
     
-    
-    
-    var parentVC = BarcodeScannerViewController()
 
 // MARK: - Camera Methods
     
@@ -60,16 +59,20 @@ enum ScannerContext {
     
     /// Adds a given input defined by `cameraInput` to `captureSession`.
     @objc func addCameraInput() {
-        let device = AVCaptureDevice.default(for: .video)!
-        let cameraInput = try! AVCaptureDeviceInput(device: device)
-        self.captureSession.addInput(cameraInput)
+        DispatchQueue.main.async {
+            let device = AVCaptureDevice.default(for: .video)!
+            let cameraInput = try! AVCaptureDeviceInput(device: device)
+            self.captureSession.addInput(cameraInput)
+        }
     }
     
     /// Adds a given input defined by `videoOutput` to `captureSession`.
     @objc func addVideoOutput() {
-        self.videoOutput.videoSettings = [(kCVPixelBufferPixelFormatTypeKey as NSString) : NSNumber(value: kCVPixelFormatType_32BGRA)] as [String : Any]
-        self.videoOutput.setSampleBufferDelegate(self.parentVC, queue: DispatchQueue(label: "barcode.scanning.queue"))
-        self.captureSession.addOutput(self.videoOutput)
+        DispatchQueue.main.async {
+            self.videoOutput.videoSettings = [(kCVPixelBufferPixelFormatTypeKey as NSString) : NSNumber(value: kCVPixelFormatType_32BGRA)] as [String : Any]
+            self.videoOutput.setSampleBufferDelegate(self.parentVC, queue: DispatchQueue(label: "barcode.scanning.queue"))
+            self.captureSession.addOutput(self.videoOutput)
+        }
     }
     
     /// Called whenever an AVCaptureVideoDataOutput instance outputs a new video frame.
@@ -77,7 +80,7 @@ enum ScannerContext {
     ///   - output: The abstract superclass for objects that output the media recorded in a capture session.
     ///   - sampleBuffer: An object that models a buffer of media data.
     ///   - connection: A connection between a specific pair of capture input and capture output objects in a capture session.
-    @objc func ncaptureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection, onSuccess: @escaping ()-> Void ) {
+    @objc func rootClassCaptureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection, onSuccess: @escaping ([String: String])-> Void ) {
         let session = BarcodeReader()
         guard let frame = CMSampleBufferGetImageBuffer(sampleBuffer) else {
             debugPrint("❌ ERROR: UNABLE TO GET IMAGE FROM SAMPLE BUFFER ❌")
@@ -92,7 +95,7 @@ enum ScannerContext {
                 if self.validateBarcodeReading(with: self.validationArray) {
                     self.captureSession.stopRunning()
                     // send results as a parameter
-                    onSuccess()
+                    onSuccess(self.dictionaryFromBarcodeData)
                 }
             }
         }

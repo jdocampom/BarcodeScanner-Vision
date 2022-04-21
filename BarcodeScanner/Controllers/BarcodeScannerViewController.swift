@@ -17,7 +17,7 @@ import UIKit
     /// Horizontal red stripe that simulates a laset tagging gun.
     @IBOutlet weak var redLaserLineView: UIView!
     /// String: String dictionary that contains the parsed data from the barcode's String representation.
-    var dictionaryFromBarcodeData = [String: String]()
+    lazy var dictionaryFromBarcodeData = [String: String]()
     /// Barcode Reader object instance.
     lazy var barcodeReader = BarcodeReader()
     /// Parent View Controller. In this case, it is HomeViewController.
@@ -98,8 +98,8 @@ import UIKit
     ///   - sampleBuffer: An object that models a buffer of media data.
     ///   - connection: A connection between a specific pair of capture input and capture output objects in a capture session.
     @objc func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        self.barcodeReader.ncaptureOutput(output, didOutput: sampleBuffer, from: connection) {
-            self.parentVC.parsedData = self.dictionaryFromBarcodeData
+        self.barcodeReader.rootClassCaptureOutput(output, didOutput: sampleBuffer, from: connection) {data in
+            self.parentVC.parsedData = data
             self.navigationController?.popViewController(animated: true)
         }
     }
