@@ -20,10 +20,18 @@ import UIKit
         self.tableView.dataSource = self
         self.tableView.reloadData()
     }
-
-    override func viewWillAppear(_ animated: Bool) {
+    
+    @objc override func viewWillAppear(_ animated: Bool) {
+        print("ENTERING BarcodeScannerViewController")
         super.viewWillAppear(animated)
         self.tableView.reloadData()
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
+        setNeedsStatusBarAppearanceUpdate()
+    }
+    
+    @objc override func viewWillDisappear(_ animated: Bool) {
+        print("LEAVING BarcodeScannerViewController")
+        super.viewWillDisappear(animated)
     }
     
     @IBAction func scannerButtonTapped(_ sender: UIButton) {
