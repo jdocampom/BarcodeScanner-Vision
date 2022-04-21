@@ -11,6 +11,7 @@ import UIKit
 @objc class BarcodeScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     @IBOutlet weak var previewLayer: UIView!
+    @IBOutlet weak var redLaserLineView: UIView!
     
     private let example2DStrings = [
         "M1OCAMPOMALDONADO/JUANEABCDEF INKBEGIN 0541 111Y005E0001 35D>5180OO    BIN              2A             0 IN                        N 21000316514         ",
@@ -46,13 +47,20 @@ import UIKit
         return true
     }
         
-    @objc override func viewDidLoad() {
+    @objc func setupRedLaserLineView() {
+        self.redLaserLineView.layer.zPosition = 1
+        self.redLaserLineView.clipsToBounds = true
+        self.redLaserLineView.layer.cornerRadius = 2
+    }
+    
+    override func viewDidLoad() {
         super.viewDidLoad()
         self.addCameraInput()
         self.addPreviewLayer()
         self.addVideoOutput()
         self.preview.frame = self.previewLayer.bounds
         self.captureSession.startRunning()
+        self.setupRedLaserLineView()
     }
     
     @objc override func viewDidLayoutSubviews() {
