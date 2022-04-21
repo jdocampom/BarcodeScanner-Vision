@@ -11,7 +11,9 @@ import UIKit
     
 // MARK: - View Controller IBOutlets and Properties
     
+    /// Table view that displays parsed data from barcode scan.
     @IBOutlet weak var tableView: UITableView!
+    /// Button that prompts the user with the barcode scanner view.
     @IBOutlet weak var scanButton: UIButton!
     
     /// Dictionary that populates the tableView. By default it contains all the keys and empty strings as the value for each key.
