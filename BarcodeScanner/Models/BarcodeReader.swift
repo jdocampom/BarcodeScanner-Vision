@@ -9,14 +9,23 @@ import AVFoundation
 import UIKit
 import Vision
 
+/// Context of how the scanner will be used on a given situation. For example, if it will be used to scan boarding passes or lugagge tags.
 enum ScannerContext {
     case boardingPass, luggageTag, clientInventory
 }
 
+/// An object that performs barcode scanning and data validation for PDF417, Aztec, QR, Code-128 and Code-39 formats.
 @objc class BarcodeReader: NSObject {
     
+    /// An object that processes image analysis requests for each frame in a sequence.
     let sequenceHandler = VNSequenceRequestHandler()
         
+    /// Method that extracts the string representation for a given barcode thats being scanned with the device's Wide Angle camera.
+    /// - Parameters:
+    ///   - frame: Still frame from a giVen AVCaptureSession.
+    ///   - context: Context of how the scanner will be used on a given situation. For example, if it will be used to scan boarding passes
+    ///   or lugagge tags.
+    /// - Returns: String representation of a ba
     func extractDataFromBarcode(fromFrame frame: CVImageBuffer, for context: ScannerContext = .boardingPass) -> String? {
         let barcodeRequest = VNDetectBarcodesRequest()
         var contextSymbologies = [VNBarcodeSymbology]()
@@ -24,7 +33,7 @@ enum ScannerContext {
         case .boardingPass:
             contextSymbologies = [.aztec, .pdf417, .qr]
         case .luggageTag:
-            contextSymbologies = [.code128]
+            contextSymbologies = [.code128, .code39]
         case .clientInventory:
             contextSymbologies = [.code128, .code39]
         }
@@ -36,6 +45,10 @@ enum ScannerContext {
         return firstBarcode
     }
     
+    /// Method that parses a given String from a 2D barcode into a dictionary with human-readable information from the barcode.
+    /// - Parameter string: String contents of a 2D barcode. Only Aztec, PDF417 or QR are currently supported.
+    /// - Returns: String: String dictionary with a human-readable representation of the string contents of a 2D barcode. This dictionary
+    /// will be used to populate the main TableView.
     func process2DBarcodeStringDataInFormatM(from string: String) -> [String: String]  {
         let formattedString = string.trimmingCharacters(in: .whitespaces).uppercased()
         var dictionary = [String: String]()
@@ -51,9 +64,12 @@ enum ScannerContext {
         return dictionary
     }
     
+    /// Checks if the last 5 elements of a given array are identical given that this array has more than 10 elements.
+    /// - Parameter array: Array that contains the string representation of the barcodes scanned.
+    /// - Returns: Boolean flag that allows either to carry on with the application or retry scanning automatically.
     func validateBarcodeReading(with array: [String]) -> Bool {
         print("⚠️ STARTING VALIDATION ⚠️")
-        print("⚠️ VALIDATION ARRAY LENGTH: \(array.count) ⚠️")
+        print("VALIDATION ARRAY LENGTH: \(array.count)")
         var didPassValidation = false
         if array.count > 10 {
             let testBatch = array.suffix(5)
