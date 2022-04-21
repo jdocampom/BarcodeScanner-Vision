@@ -70,10 +70,10 @@
 				8628D85C280E41AF00B0C814 /* AppDelegate.swift */,
 				8628D85E280E41AF00B0C814 /* SceneDelegate.swift */,
 				8628D865280E41B100B0C814 /* Assets.xcassets */,
-				8698AECE2811CA740075BDA8 /* Controllers */,
-				8698AEC92811CA0D0075BDA8 /* Helpers */,
 				8698AEC82811CA000075BDA8 /* Models */,
 				8698AECF2811CA940075BDA8 /* Views */,
+				8698AECE2811CA740075BDA8 /* Controllers */,
+				8698AEC92811CA0D0075BDA8 /* Helpers */,
 			);
 			path = BarcodeScanner;
 			sourceTree = "<group>";

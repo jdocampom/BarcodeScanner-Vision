@@ -7,9 +7,11 @@
 
 import UIKit
 
-extension UITableViewCell: UITextFieldDelegate {
+extension ParsedDataCell: UITextFieldDelegate {
+
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
-        return true;
+        return true
     }
+    
 }

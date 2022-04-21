@@ -20,5 +20,8 @@ import UIKit
         super.setSelected(selected, animated: animated)
     }
     
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        textField.resignFirstResponder()
+    }
+    
 }
-
