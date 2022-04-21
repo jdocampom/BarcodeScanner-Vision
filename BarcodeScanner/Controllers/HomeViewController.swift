@@ -79,12 +79,3 @@ extension HomeViewController {
     }
     
 }
-
-extension UITableViewCell: UITextFieldDelegate {
-    public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        return true;
-    }
-}
-
-

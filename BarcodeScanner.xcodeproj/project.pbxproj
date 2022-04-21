@@ -17,6 +17,7 @@
 		864A123928119B25005F644B /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 864A123828119B25005F644B /* HomeViewController.swift */; };
 		8698AEC52811A7770075BDA8 /* BarcodeScannerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8698AEC42811A7770075BDA8 /* BarcodeScannerViewController.swift */; };
 		8698AEC72811AB7A0075BDA8 /* BarcodeReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8698AEC62811AB7A0075BDA8 /* BarcodeReader.swift */; };
+		8698AECD2811CA5A0075BDA8 /* UITableViewCell+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8698AECC2811CA5A0075BDA8 /* UITableViewCell+Ext.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 		864A123828119B25005F644B /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		8698AEC42811A7770075BDA8 /* BarcodeScannerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarcodeScannerViewController.swift; sourceTree = "<group>"; };
 		8698AEC62811AB7A0075BDA8 /* BarcodeReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarcodeReader.swift; sourceTree = "<group>"; };
+		8698AECC2811CA5A0075BDA8 /* UITableViewCell+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableViewCell+Ext.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,19 +66,52 @@
 		8628D85B280E41AF00B0C814 /* BarcodeScanner */ = {
 			isa = PBXGroup;
 			children = (
+				8628D86A280E41B100B0C814 /* Info.plist */,
 				8628D85C280E41AF00B0C814 /* AppDelegate.swift */,
 				8628D85E280E41AF00B0C814 /* SceneDelegate.swift */,
-				864A123828119B25005F644B /* HomeViewController.swift */,
-				8698AEC42811A7770075BDA8 /* BarcodeScannerViewController.swift */,
-				8628D862280E41AF00B0C814 /* Main.storyboard */,
-				862F1405280F9AA8007626F2 /* ParsedDataCell.swift */,
 				8628D865280E41B100B0C814 /* Assets.xcassets */,
-				8628D867280E41B100B0C814 /* LaunchScreen.storyboard */,
-				8628D86A280E41B100B0C814 /* Info.plist */,
-				862F13FF280F8DE3007626F2 /* String+Ext.swift */,
-				8698AEC62811AB7A0075BDA8 /* BarcodeReader.swift */,
+				8698AECE2811CA740075BDA8 /* Controllers */,
+				8698AEC92811CA0D0075BDA8 /* Helpers */,
+				8698AEC82811CA000075BDA8 /* Models */,
+				8698AECF2811CA940075BDA8 /* Views */,
 			);
 			path = BarcodeScanner;
+			sourceTree = "<group>";
+		};
+		8698AEC82811CA000075BDA8 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				8698AEC62811AB7A0075BDA8 /* BarcodeReader.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		8698AEC92811CA0D0075BDA8 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				862F13FF280F8DE3007626F2 /* String+Ext.swift */,
+				8698AECC2811CA5A0075BDA8 /* UITableViewCell+Ext.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+		8698AECE2811CA740075BDA8 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				864A123828119B25005F644B /* HomeViewController.swift */,
+				8698AEC42811A7770075BDA8 /* BarcodeScannerViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		8698AECF2811CA940075BDA8 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				862F1405280F9AA8007626F2 /* ParsedDataCell.swift */,
+				8628D867280E41B100B0C814 /* LaunchScreen.storyboard */,
+				8628D862280E41AF00B0C814 /* Main.storyboard */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -151,6 +186,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8628D85D280E41AF00B0C814 /* AppDelegate.swift in Sources */,
+				8698AECD2811CA5A0075BDA8 /* UITableViewCell+Ext.swift in Sources */,
 				8698AEC72811AB7A0075BDA8 /* BarcodeReader.swift in Sources */,
 				862F1400280F8DE3007626F2 /* String+Ext.swift in Sources */,
 				862F1407280F9AA8007626F2 /* ParsedDataCell.swift in Sources */,
