@@ -12,12 +12,13 @@ import UIKit
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var scanButton: UIButton!
     
-    public var parsedData: [String: String] = ["format": "M1"]
+    public var parsedData: [String: String] = ["format": "", "passenger_name": "", "e_ticket_indicator": "", "pnr_address": "", "origin_station_iata": "", "destination_station_iata": "", "carrier_code": "", "flight_number": "", "julian_date": "", "fare_code": "", "seat_number": "", "security_number": "", "passenger_status": ""]
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tableView.delegate = self
         self.tableView.dataSource = self
+        self.tableView.keyboardDismissMode = .interactive
         self.tableView.reloadData()
     }
     
@@ -66,6 +67,7 @@ extension HomeViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "parsedDataCell", for: indexPath) as! ParsedDataCell
         cell.keyLabel.text = Array(parsedData.keys)[indexPath.row].capitalized.replacingOccurrences(of: "_", with: " ").replacingOccurrences(of: "Iata", with: "IATA").replacingOccurrences(of: "Pnr", with: "PNR")
         cell.valueTextField.text = Array(parsedData.values)[indexPath.row].uppercased()
+        cell.selectionStyle = .none
 //        cell.keyLabel.text = "format".capitalized
 //        cell.valueTextField.text = "DOE/MRJOHN".uppercased()
 //        cell.layer.masksToBounds = true
@@ -76,6 +78,13 @@ extension HomeViewController {
         return cell
     }
     
+}
+
+extension UITableViewCell: UITextFieldDelegate {
+    public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true;
+    }
 }
 
 

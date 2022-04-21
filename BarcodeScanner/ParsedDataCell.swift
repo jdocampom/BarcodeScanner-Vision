@@ -11,7 +11,6 @@ import UIKit
     
     @IBOutlet weak var keyLabel: UILabel!
     @IBOutlet weak var valueTextField: UITextField!
-    
 
     override class func awakeFromNib() {
         super.awakeFromNib()
@@ -23,11 +22,3 @@ import UIKit
     
 }
 
-extension ParsedDataCell: UITextFieldDelegate {
- 
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        return true
-    }
-    
-}

@@ -12,7 +12,10 @@ import UIKit
     
     @IBOutlet weak var previewLayer: UIView!
     
-    private let example2DStrings = ["M1OCAMPOMALDONADO/JUANEABCDEF INKBEGIN 0541 111Y005E0001 35D>5180OO    BIN              2A             0 IN                        N 21000316514         "]
+    private let example2DStrings = [
+        "M1OCAMPOMALDONADO/JUANEABCDEF INKBEGIN 0541 111Y005E0001 35D>5180OO    BIN              2A             0 IN                        N 21000316514         ",
+        "M1DOE/JOHN             UVWXYZ INKBOGCUS2356 111C011A0001 35D>5180OO    BCUS             2A             0 CUS                       N 21000006296         ",
+    ]
     
     var isPortraitDefaultOrientarion = true
     var extractedStringFromBarcode = ""
@@ -21,6 +24,13 @@ import UIKit
     var videoOutput = AVCaptureVideoDataOutput()
     var scannerContext: ScannerContext = .boardingPass
 //    var scannerContext: ScannerContext = .luggageTag
+    
+    deinit {
+        self.extractedStringFromBarcode = ""
+        self.dictionaryFromBarcodeData = [String: String]()
+        self.captureSession.stopRunning()
+        print("BarcodeScannerViewController HAS BEEN DEINITIALISED")
+    }
     
     lazy var preview: AVCaptureVideoPreviewLayer = {
         let preview = AVCaptureVideoPreviewLayer(session: self.captureSession)
