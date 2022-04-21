@@ -80,6 +80,28 @@ import Vision
         self.videoOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "barcode.scanning.queue"))
         self.captureSession.addOutput(self.videoOutput)
     }
+    
+    @objc func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        let session = BarcodeReader()
+        let example2DString = "M1OCAMPOMALDONADO/JUANEABCDEF INKBEGIN 0541 111Y005E0001 35D>5180OO    BIN              2A             0 IN                        N 21000316514         "
+        guard let frame = CMSampleBufferGetImageBuffer(sampleBuffer) else {
+            debugPrint("❌ ERROR: UNABLE TO GET IMAGE FROM SAMPLE BUFFER ❌")
+            return
+        }
+        if let barcode = session.extractDataFromBarcode(fromFrame: frame) {
+            DispatchQueue.main.async { [self] in
+                self.dictionaryFromBarcodeData = session.process2DBarcodeStringDataInFormatM(from: barcode)
+                self.captureSession.stopRunning()
+                print("🔍 EXTRACTED DICTIONARY 🔍 \n\(self.dictionaryFromBarcodeData)")
+                print("🔍 EXTRACTED BARCODE STRING 🔍 \n>\(barcode)<")
+                example2DString == barcode ? print("✅ STRINGS MATCH ✅") : print("❌ STRINGS DON'T MATCH ❌")
+                let alert = UIAlertController(title: "Detected Barcode", message: barcode, preferredStyle: .alert)
+                let action = UIAlertAction(title: "Dismiss", style: .default)
+                alert.addAction(action)
+                self.present(alert, animated: true)
+            }
+        }
+    }
 
     /*
     // MARK: - Navigation
