@@ -33,7 +33,7 @@ import UIKit
     
 // MARK: - View Controller Lifecycle Methods
 
-    /// Called after the view has been loaded,
+    /// Called after the view has been loaded.
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tableView.delegate = self

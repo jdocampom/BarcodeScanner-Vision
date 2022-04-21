@@ -10,141 +10,110 @@ import UIKit
 
 @objc class BarcodeScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
     
+    // MARK: - Barcode Scanner View Controller IBOutlets and Properties
+    
+    /// View that displays whats being captured by the camera.
     @IBOutlet weak var previewLayer: UIView!
+    /// Horizontal red stripe that simulates a laset tagging gun.
     @IBOutlet weak var redLaserLineView: UIView!
-    
-    private let example2DStrings = [
-        "M1OCAMPOMALDONADO/JUANEABCDEF INKBEGIN 0541 111Y005E0001 35D>5180OO    BIN              2A             0 IN                        N 21000316514         ",
-        "M1DOE/JOHN             UVWXYZ INKBOGCUS2356 111C011A0001 35D>5180OO    BCUS             2A             0 CUS                       N 21000006296         ",
-    ]
-    
-    let barcodeReader = BarcodeReader()
-    var validationArray = [String]()
-    
-    var parentVC = HomeViewController()
-    var isPortraitDefaultOrientarion = true
-    var extractedStringFromBarcode = ""
+    /// String: String dictionary that contains the parsed data from the barcode's String representation.
     var dictionaryFromBarcodeData = [String: String]()
-    var captureSession = AVCaptureSession()
-    var videoOutput = AVCaptureVideoDataOutput()
-    var scannerContext: ScannerContext = .boardingPass
-//    var scannerContext: ScannerContext = .luggageTag
+    /// Barcode Reader object instance.
+    lazy var barcodeReader = BarcodeReader()
+    /// Parent View Controller. In this case, it is HomeViewController.
+    lazy var parentVC = HomeViewController()
+    /// A Core Animation layer that displays the video as it’s captured by the device's Wide Angle camera.
+    /// Neither Telephoto or Ultra Wide Angle cameras are currently supported due to compatibility reasons.
+    lazy var preview = barcodeReader.preview
     
-    deinit {
-        self.extractedStringFromBarcode = ""
-        self.dictionaryFromBarcodeData = [String: String]()
-        self.captureSession.stopRunning()
-        print("BarcodeScannerViewController HAS BEEN DEINITIALISED")
-    }
+    // MARK: - Barcode Scanner View Controller Lifecycle Methods
     
-    lazy var preview: AVCaptureVideoPreviewLayer = {
-        let preview = AVCaptureVideoPreviewLayer(session: self.captureSession)
-        preview.videoGravity = .resizeAspectFill
-        return preview
-    }()
+    /// Called immediately before any BarcodeScannerViewControllerinstance is deallocated from memory.
+//    deinit {
+//        self.barcodeReader.extractedStringFromBarcode = ""
+//        self.barcodeReader.dictionaryFromBarcodeData = [String: String]()
+//        self.barcodeReader.captureSession.stopRunning()
+//        print("BarcodeScannerViewController HAS BEEN DEINITIALISED")
+//    }
     
+    /// Controls the attributes of the status bar when this view controller is shown.
     @objc override var preferredStatusBarStyle : UIStatusBarStyle {
         return .darkContent
     }
     
+    /// Controls whether status bar is shown or not when this view controller is shown.
     @objc override var prefersStatusBarHidden: Bool {
         return true
     }
-        
+    
+    /// Moves `redLaserLineView` on top of `previewLayer` so it is shown on screen while scanning a barcode.
     @objc func setupRedLaserLineView() {
         self.redLaserLineView.layer.zPosition = 1
         self.redLaserLineView.clipsToBounds = true
         self.redLaserLineView.layer.cornerRadius = 2
     }
     
+    /// Called after the view has been loaded.
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.addCameraInput()
         self.addPreviewLayer()
-        self.addVideoOutput()
         self.preview.frame = self.previewLayer.safeAreaLayoutGuide.layoutFrame
         self.setupRedLaserLineView()
-        self.captureSession.startRunning()
+        self.barcodeReader.parentVC = self
+        self.barcodeReader.configureSession()
     }
     
-    @objc override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        self.preview.frame = self.previewLayer.bounds
-    }
-    
+    /// Called when the view is about to made visible.
     @objc override func viewWillAppear(_ animated: Bool) {
         print("ENTERING BarcodeScannerViewController")
         super.viewWillAppear(animated)
         self.navigationItem.setHidesBackButton(true, animated: false)
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
         self.preview.frame = self.previewLayer.bounds
-        self.captureSession.startRunning()
+        self.barcodeReader.captureSession.startRunning()
     }
     
+    /// Called when the view is dismissed, covered or otherwise hidden.
     @objc override func viewWillDisappear(_ animated: Bool) {
         print("LEAVING BarcodeScannerViewController")
         super.viewWillDisappear(animated)
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
-        self.captureSession.stopRunning()
+        self.barcodeReader.captureSession.stopRunning()
     }
     
-    @objc private func addCameraInput() {
-        let device = AVCaptureDevice.default(for: .video)!
-        let cameraInput = try! AVCaptureDeviceInput(device: device)
-        self.captureSession.addInput(cameraInput)
+    /// Called just after the view controller's view's layoutSubviews method is invoked.
+    @objc override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        self.preview.frame = self.previewLayer.bounds
     }
     
+    /// Puts the Core Animation layer that displays the video on top of `previewLayer` so it's visible to the user.
     @objc private func addPreviewLayer() {
         self.previewLayer.layer.addSublayer(self.preview)
     }
     
-    @objc private func addVideoOutput() {
-        self.videoOutput.videoSettings = [(kCVPixelBufferPixelFormatTypeKey as NSString) : NSNumber(value: kCVPixelFormatType_32BGRA)] as [String : Any]
-        self.videoOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "barcode.scanning.queue"))
-        self.captureSession.addOutput(self.videoOutput)
-    }
-    
+    /// Called whenever an AVCaptureVideoDataOutput instance outputs a new video frame.
+    /// - Parameters:
+    ///   - output: The abstract superclass for objects that output the media recorded in a capture session.
+    ///   - sampleBuffer: An object that models a buffer of media data.
+    ///   - connection: A connection between a specific pair of capture input and capture output objects in a capture session.
     @objc func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        let session = BarcodeReader()
-        guard let frame = CMSampleBufferGetImageBuffer(sampleBuffer) else {
-            debugPrint("❌ ERROR: UNABLE TO GET IMAGE FROM SAMPLE BUFFER ❌")
-            return
-        }
-        if let barcode = barcodeReader.extractDataFromBarcode(fromFrame: frame, for: scannerContext) {
-            DispatchQueue.main.async { [self] in
-                self.dictionaryFromBarcodeData = session.process2DBarcodeStringDataInFormatM(from: barcode)
-                print("🔍 EXTRACTED DICTIONARY 🔍 \n\(self.dictionaryFromBarcodeData)")
-                print("🔍 EXTRACTED BARCODE STRING (WHATS IN BETWEEN ><) 🔍 \n>\(barcode)<")
-                self.example2DStrings.contains(barcode) ? print("✅ STRINGS MATCH ✅") : print("❌ STRINGS DON'T MATCH ❌")
-                self.validationArray.append(barcode)
-                if barcodeReader.validateBarcodeReading(with: self.validationArray) {
-                    self.captureSession.stopRunning()
-                    parentVC.parsedData = self.dictionaryFromBarcodeData
-                    self.navigationController?.popViewController(animated: true)
-                }
-//                self.performSegue(withIdentifier: "barcodeScannedSuccesfully", sender: self)
-//                let alert = UIAlertController(title: "Detected Barcode", message: barcode, preferredStyle: .alert)
-//                let action = UIAlertAction(title: "Dismiss", style: .default)
-//                alert.addAction(action)
-//                self.present(alert, animated: true)
-            }
+        self.barcodeReader.ncaptureOutput(output, didOutput: sampleBuffer, from: connection) {
+            self.parentVC.parsedData = self.dictionaryFromBarcodeData
+            self.navigationController?.popViewController(animated: true)
         }
     }
     
+}
+
+// MARK: - Barcode Scanner View Controller IBActions and Methods
+
+extension BarcodeScannerViewController {
+    
+    /// Dismisses this view controller and returns to `HomeViewController` when tapped.
     @IBAction func cancelButtonTapped(_ sender: UIButton) {
         print("DISMISS BUTTON TAPPED")
         self.navigationController?.popViewController(animated: true)
     }
     
-    // MARK: - Navigation
-
-    // todo:  change to popview
-    
-//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        if segue.identifier == "barcodeScannedSuccesfully" {
-//            let destination = segue.destination as! HomeViewController
-//            destination.parsedData = self.dictionaryFromBarcodeData
-//        }
-//    }
-
 }
