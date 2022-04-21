@@ -18,6 +18,7 @@ import UIKit
         "M1DOE/JOHN             UVWXYZ INKBOGCUS2356 111C011A0001 35D>5180OO    BCUS             2A             0 CUS                       N 21000006296         ",
     ]
     
+    var parentVC = HomeViewController()
     var isPortraitDefaultOrientarion = true
     var extractedStringFromBarcode = ""
     var dictionaryFromBarcodeData = [String: String]()
@@ -58,9 +59,9 @@ import UIKit
         self.addCameraInput()
         self.addPreviewLayer()
         self.addVideoOutput()
-        self.preview.frame = self.previewLayer.bounds
-        self.captureSession.startRunning()
+        self.preview.frame = self.previewLayer.safeAreaLayoutGuide.layoutFrame
         self.setupRedLaserLineView()
+        self.captureSession.startRunning()
     }
     
     @objc override func viewDidLayoutSubviews() {
@@ -109,11 +110,16 @@ import UIKit
         if let barcode = session.extractDataFromBarcode(fromFrame: frame, for: scannerContext) {
             DispatchQueue.main.async { [self] in
                 self.dictionaryFromBarcodeData = session.process2DBarcodeStringDataInFormatM(from: barcode)
-                self.captureSession.stopRunning()
                 print("🔍 EXTRACTED DICTIONARY 🔍 \n\(self.dictionaryFromBarcodeData)")
                 print("🔍 EXTRACTED BARCODE STRING (WHATS IN BETWEEN ><) 🔍 \n>\(barcode)<")
                 self.example2DStrings.contains(barcode) ? print("✅ STRINGS MATCH ✅") : print("❌ STRINGS DON'T MATCH ❌")
-                self.performSegue(withIdentifier: "barcodeScannedSuccesfully", sender: self)
+                session.validationArray.append(barcode)
+                if session.validateBarcodeReading() {
+                    self.captureSession.stopRunning()
+                    parentVC.parsedData = self.dictionaryFromBarcodeData
+                    self.navigationController?.popViewController(animated: true)
+                }
+//                self.performSegue(withIdentifier: "barcodeScannedSuccesfully", sender: self)
 //                let alert = UIAlertController(title: "Detected Barcode", message: barcode, preferredStyle: .alert)
 //                let action = UIAlertAction(title: "Dismiss", style: .default)
 //                alert.addAction(action)
@@ -129,11 +135,13 @@ import UIKit
     
     // MARK: - Navigation
 
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "barcodeScannedSuccesfully" {
-            let destination = segue.destination as! HomeViewController
-            destination.parsedData = self.dictionaryFromBarcodeData
-        }
-    }
+    // todo:  change to popview
+    
+//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+//        if segue.identifier == "barcodeScannedSuccesfully" {
+//            let destination = segue.destination as! HomeViewController
+//            destination.parsedData = self.dictionaryFromBarcodeData
+//        }
+//    }
 
 }
