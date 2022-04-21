@@ -12,6 +12,8 @@ import UIKit
     
     @IBOutlet weak var previewLayer: UIView!
     
+    private let example2DStrings = ["M1OCAMPOMALDONADO/JUANEABCDEF INKBEGIN 0541 111Y005E0001 35D>5180OO    BIN              2A             0 IN                        N 21000316514         "]
+    
     var isPortraitDefaultOrientarion = true
     var extractedStringFromBarcode = ""
     var dictionaryFromBarcodeData = [String: String]()
@@ -82,7 +84,6 @@ import UIKit
     
     @objc func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         let session = BarcodeReader()
-        let example2DString = "M1OCAMPOMALDONADO/JUANEABCDEF INKBEGIN 0541 111Y005E0001 35D>5180OO    BIN              2A             0 IN                        N 21000316514         "
         guard let frame = CMSampleBufferGetImageBuffer(sampleBuffer) else {
             debugPrint("❌ ERROR: UNABLE TO GET IMAGE FROM SAMPLE BUFFER ❌")
             return
@@ -93,7 +94,7 @@ import UIKit
                 self.captureSession.stopRunning()
                 print("🔍 EXTRACTED DICTIONARY 🔍 \n\(self.dictionaryFromBarcodeData)")
                 print("🔍 EXTRACTED BARCODE STRING (WHATS IN BETWEEN ><) 🔍 \n>\(barcode)<")
-                example2DString == barcode ? print("✅ STRINGS MATCH ✅") : print("❌ STRINGS DON'T MATCH ❌")
+                self.example2DStrings.contains(barcode) ? print("✅ STRINGS MATCH ✅") : print("❌ STRINGS DON'T MATCH ❌")
                 self.performSegue(withIdentifier: "barcodeScannedSuccesfully", sender: self)
 //                let alert = UIAlertController(title: "Detected Barcode", message: barcode, preferredStyle: .alert)
 //                let action = UIAlertAction(title: "Dismiss", style: .default)
