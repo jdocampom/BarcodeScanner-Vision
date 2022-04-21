@@ -7,7 +7,6 @@
 
 import AVFoundation
 import UIKit
-import Vision
 
 @objc class BarcodeScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
     
@@ -16,10 +15,10 @@ import Vision
     var isPortraitDefaultOrientarion = true
     var extractedStringFromBarcode = ""
     var dictionaryFromBarcodeData = [String: String]()
-    
     var captureSession = AVCaptureSession()
-    var sequenceHandler = VNSequenceRequestHandler()
     var videoOutput = AVCaptureVideoDataOutput()
+    var scannerContext: ScannerContext = .boardingPass
+//    var scannerContext: ScannerContext = .luggageTag
     
     lazy var preview: AVCaptureVideoPreviewLayer = {
         let preview = AVCaptureVideoPreviewLayer(session: self.captureSession)
@@ -52,7 +51,7 @@ import Vision
     @objc override func viewWillAppear(_ animated: Bool) {
         print("ENTERING BarcodeScannerViewController")
         super.viewWillAppear(animated)
-//        self.navigationItem.setHidesBackButton(true, animated: false)
+        self.navigationItem.setHidesBackButton(true, animated: false)
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
         self.preview.frame = self.previewLayer.bounds
         self.captureSession.startRunning()
@@ -88,12 +87,12 @@ import Vision
             debugPrint("❌ ERROR: UNABLE TO GET IMAGE FROM SAMPLE BUFFER ❌")
             return
         }
-        if let barcode = session.extractDataFromBarcode(fromFrame: frame) {
+        if let barcode = session.extractDataFromBarcode(fromFrame: frame, for: scannerContext) {
             DispatchQueue.main.async { [self] in
                 self.dictionaryFromBarcodeData = session.process2DBarcodeStringDataInFormatM(from: barcode)
                 self.captureSession.stopRunning()
                 print("🔍 EXTRACTED DICTIONARY 🔍 \n\(self.dictionaryFromBarcodeData)")
-                print("🔍 EXTRACTED BARCODE STRING 🔍 \n>\(barcode)<")
+                print("🔍 EXTRACTED BARCODE STRING (WHATS IN BETWEEN ><) 🔍 \n>\(barcode)<")
                 example2DString == barcode ? print("✅ STRINGS MATCH ✅") : print("❌ STRINGS DON'T MATCH ❌")
                 let alert = UIAlertController(title: "Detected Barcode", message: barcode, preferredStyle: .alert)
                 let action = UIAlertAction(title: "Dismiss", style: .default)
@@ -102,6 +101,12 @@ import Vision
             }
         }
     }
+    
+    @IBAction func cancelButtonTapped(_ sender: UIButton) {
+        print("DISMISS BUTTON TAPPED")
+        self.navigationController?.popViewController(animated: true)
+    }
+    
 
     /*
     // MARK: - Navigation

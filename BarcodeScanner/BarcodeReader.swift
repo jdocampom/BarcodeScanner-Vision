@@ -9,11 +9,11 @@ import AVFoundation
 import UIKit
 import Vision
 
+enum ScannerContext {
+    case boardingPass, luggageTag, clientInventory
+}
+
 @objc class BarcodeReader: NSObject {
-    
-    enum ScannerContext {
-        case boardingPass, luggageTag, clientInventory
-    }
     
     let sequenceHandler = VNSequenceRequestHandler()
     
