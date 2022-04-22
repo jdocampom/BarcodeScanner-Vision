@@ -26,7 +26,7 @@ import UIKit
     /// Neither Telephoto or Ultra Wide Angle cameras are currently supported due to compatibility reasons.
     lazy var preview = barcodeReader.preview
     /// Context of how the scanner will be used on a given situation. For example, if it will be used to scan boarding passes or lugagge tags.
-    var scannerContext: ScannerContext = .boardingPass
+    lazy var scannerContext: ScannerContext = .boardingPass
     
     // MARK: - Barcode Scanner View Controller Lifecycle Methods
     

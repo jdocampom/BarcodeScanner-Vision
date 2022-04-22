@@ -2,7 +2,7 @@
 //  AppDelegate.swift
 //  BarcodeScanner
 //
-//  Created by Juan Diego Ocampo on 18/04/22.
+//  Created by Juan Diego Ocampo on 21/04/22.
 //
 
 import UIKit
