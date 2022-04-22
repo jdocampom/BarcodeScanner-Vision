@@ -18,8 +18,8 @@ import UIKit
     /// Toolbar located at the bottom where the Scan Button is located at.
     @IBOutlet weak var bottomToolbar: UIToolbar!
         
-    /// Dictionary that populates the tableView. By default it contains all the keys and empty strings as the value for each key.
-    lazy var parsedData: [String: String] = [
+    /// Default value for `parsedData´.
+    let sampleData: [String: String] = [
         "format"                    : "",
         "passenger_name"            : "",
         "e_ticket_indicator"        : "",
@@ -34,6 +34,8 @@ import UIKit
         "security_number"           : "",
         "passenger_status"          : ""
     ]
+    /// Dictionary that populates the tableView.
+    lazy var parsedData = [String: String]()
     
 // MARK: - View Controller Lifecycle Methods
 
@@ -60,6 +62,7 @@ import UIKit
     @objc override func viewWillDisappear(_ animated: Bool) {
         print("LEAVING BarcodeScannerViewController")
         super.viewWillDisappear(animated)
+        self.parsedData = [String: String]()
 //        self.navigationController?.setToolbarHidden(true, animated: animated)
     }
     

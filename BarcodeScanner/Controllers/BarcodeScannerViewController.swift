@@ -100,10 +100,9 @@ import UIKit
         print("LEAVING BarcodeScannerViewController")
         super.viewWillDisappear(animated)
         self.navigationController?.setNavigationBarHidden(false, animated: animated)
-//        self.navigationController?.setToolbarHidden(false, animated: animated)
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
         self.barcodeReader.captureSession.stopRunning()
-        self.removeFromParent()
+        self.previewLayer.layer.removeFromSuperlayer()
     }
     
     /// Called just after the view controller's view's layoutSubviews method is invoked.

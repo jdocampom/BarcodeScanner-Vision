@@ -50,11 +50,12 @@ enum ScannerContext {
         return preview
     }()
     
+// MARK: - BarcodeReader Lifecycle Methods
+    
+    /// Called immediately before any BarcodeScannerViewControllerinstance is deallocated from memory.
     deinit {
         self.captureSession.stopRunning()
-        self.dictionaryFromBarcodeData = [String: String]()
-        self.validationArray = [String]()
-        self.extractedStringFromBarcode = ""
+        print("BarcodeReader HAS BEEN DEINITIALISED")
     }
     
     // MARK: - Camera Methods
