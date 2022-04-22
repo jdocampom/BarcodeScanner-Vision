@@ -14,12 +14,16 @@ import UIKit
     
     /// View that displays whats being captured by the camera.
     @IBOutlet weak var previewLayer: UIView!
-    /// Horizontal red stripe that simulates a laset tagging gun.
-    @IBOutlet weak var redLaserLineView: UIView!
+    /// Horizontal red stripe that simulates a laset tagging gun (Landscape orientation).
+    @IBOutlet weak var verticalRedLine: UIView!
+    /// Horizontal red stripe that simulates a laset tagging gun (Portrait orientation).
+    @IBOutlet weak var horizontalRedLine: UIView!
     /// String: String dictionary that contains the parsed data from the barcode's String representation.
     lazy var dictionaryFromBarcodeData = [String: String]()
     /// Barcode Reader object instance.
     lazy var barcodeReader = BarcodeReader()
+    /// Property than indicates selected video orientation.
+    lazy var videoOrientation: AVCaptureVideoOrientation = .portrait
     /// Parent View Controller. In this case, it is HomeViewController.
     lazy var parentVC = HomeViewController()
     /// A Core Animation layer that displays the video as it’s captured by the device's Wide Angle camera.
@@ -46,11 +50,26 @@ import UIKit
         return true
     }
     
-    /// Moves `redLaserLineView` on top of `previewLayer` so it is shown on screen while scanning a barcode.
-    @objc func setupRedLaserLineView() {
-        self.redLaserLineView.layer.zPosition = 1
-        self.redLaserLineView.clipsToBounds = true
-        self.redLaserLineView.layer.cornerRadius = 2
+    /// Moves `horizontalRedLine` on top of `previewLayer` so it is shown on screen while scanning a barcode.
+    @objc func setupLaserViewForPortraitVideo() {
+        self.horizontalRedLine.isHidden = false
+        self.horizontalRedLine.layer.zPosition = 1
+        self.horizontalRedLine.clipsToBounds = true
+        self.horizontalRedLine.layer.cornerRadius = 2
+    }
+    
+    /// Moves `verticalRedLine` on top of `previewLayer` so it is shown on screen while scanning a barcode.
+    @objc func setupLaserViewForLandscapeVideo() {
+        self.verticalRedLine.isHidden = false
+        self.verticalRedLine.layer.zPosition = 1
+        self.verticalRedLine.clipsToBounds = true
+        self.verticalRedLine.layer.cornerRadius = 2
+    }
+    
+    /// Hides both `verticalRedLine` and `horizontalRedLine` so they wont be shown while loading the view
+    @objc func setupRedLaserLineViews() {
+        self.horizontalRedLine.layer.zPosition = 0
+        self.horizontalRedLine.layer.zPosition = 0
     }
     
     /// Called after the view has been loaded.
@@ -58,10 +77,12 @@ import UIKit
         super.viewDidLoad()
         self.addPreviewLayer()
         self.preview.frame = self.previewLayer.safeAreaLayoutGuide.layoutFrame
-        self.setupRedLaserLineView()
+        self.setupRedLaserLineViews()
         self.barcodeReader.parentVC = self
         self.barcodeReader.configureSession()
     }
+    
+    
     
     /// Called when the view is about to made visible.
     @objc override func viewWillAppear(_ animated: Bool) {
@@ -69,14 +90,9 @@ import UIKit
         super.viewWillAppear(animated)
         self.navigationItem.setHidesBackButton(true, animated: animated)
         self.navigationController?.setNavigationBarHidden(true, animated: animated)
-//        self.navigationController?.setToolbarHidden(true, animated: animated)
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
-//        let x = self.previewLayer.bounds.minX
-//        let y = self.previewLayer.bounds.minY
-//        let width = self.previewLayer.bounds.maxX
-//        let height = self.previewLayer.bounds.maxY
-//        self.preview.frame = CGRect(x: x, y: y, width: width, height: height)
         self.previewLayer.clipsToBounds = true
+        self.videoOrientation == .portrait ? self.setupLaserViewForPortraitVideo() : self.setupLaserViewForLandscapeVideo()
         self.preview.frame = self.previewLayer.bounds
         self.barcodeReader.captureSession.startRunning()
     }
@@ -108,6 +124,7 @@ import UIKit
     ///   - sampleBuffer: An object that models a buffer of media data.
     ///   - connection: A connection between a specific pair of capture input and capture output objects in a capture session.
     @objc func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        self.barcodeReader.videoOrientation = self.videoOrientation
         self.barcodeReader.rootClassCaptureOutput(output, didOutput: sampleBuffer, from: connection) {data in
             self.parentVC.parsedData = data
             self.navigationController?.popViewController(animated: true)
@@ -119,9 +136,6 @@ import UIKit
 // MARK: - Barcode Scanner View Controller IBActions and Methods
 
 extension BarcodeScannerViewController {
-    
-    
-    
     
 //    /// Dismisses this view controller and returns to `HomeViewController` when tapped.
     @IBAction func cancelButtonTapped(_ sender: UIBarButtonItem) {

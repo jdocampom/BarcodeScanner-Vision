@@ -37,6 +37,8 @@ enum ScannerContext {
     var captureSession = AVCaptureSession()
     /// A capture output that records video and provides access to video frames for processing.
     var videoOutput = AVCaptureVideoDataOutput()
+    /// Property than indicates selected video orientation.
+    var videoOrientation: AVCaptureVideoOrientation = .portrait
     /// Parent View Controller. In this case, it is HomeViewController.
     lazy var parentVC = BarcodeScannerViewController()
     /// A Core Animation layer that displays the video as it’s captured by the device's Wide Angle camera.
@@ -44,6 +46,7 @@ enum ScannerContext {
     lazy var preview: AVCaptureVideoPreviewLayer = {
         let preview = AVCaptureVideoPreviewLayer(session: self.captureSession)
         preview.videoGravity = .resizeAspectFill
+//        preview.connection = self.videoOrientation
         return preview
     }()
     
@@ -85,6 +88,8 @@ enum ScannerContext {
     ///   - connection: A connection between a specific pair of capture input and capture output objects in a capture session.
     @objc func rootClassCaptureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection, onSuccess: @escaping ([String: String])-> Void ) {
         let session = self
+        connection.videoOrientation = self.videoOrientation
+        print("CURRENT ORIENTATION: \(String(describing: connection.videoOrientation.rawValue))")
         guard let frame = CMSampleBufferGetImageBuffer(sampleBuffer) else {
             debugPrint("❌ ERROR: UNABLE TO GET IMAGE FROM SAMPLE BUFFER ❌")
             return
