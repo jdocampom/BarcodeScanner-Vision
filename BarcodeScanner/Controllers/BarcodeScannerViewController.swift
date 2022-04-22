@@ -126,7 +126,6 @@ import UIKit
         self.barcodeReader.rootClassCaptureOutput(output, didOutput: sampleBuffer, from: connection) { [weak self] data in
             self?.parentVC.parsedData = data
             self?.navigationController?.popViewController(animated: true)
-//            self.removeFromParent()
         }
     }
     

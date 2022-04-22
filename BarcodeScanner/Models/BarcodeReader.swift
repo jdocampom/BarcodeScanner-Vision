@@ -96,7 +96,6 @@ enum ScannerContext {
     @objc func rootClassCaptureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection, onSuccess: @escaping ([String: String])-> Void ) {
         let session = self
         connection.videoOrientation = self.videoOrientation
-        print("CURRENT ORIENTATION: \(String(describing: connection.videoOrientation.rawValue))")
         guard let frame = CMSampleBufferGetImageBuffer(sampleBuffer) else {
             debugPrint("❌ ERROR: UNABLE TO GET IMAGE FROM SAMPLE BUFFER ❌")
             return
