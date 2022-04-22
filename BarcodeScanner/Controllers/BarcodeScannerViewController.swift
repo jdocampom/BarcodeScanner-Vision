@@ -68,7 +68,8 @@ import UIKit
         print("ENTERING BarcodeScannerViewController")
         super.viewWillAppear(animated)
         self.navigationItem.setHidesBackButton(true, animated: animated)
-        navigationController?.setNavigationBarHidden(true, animated: animated)
+        self.navigationController?.setNavigationBarHidden(true, animated: animated)
+//        self.navigationController?.setToolbarHidden(true, animated: animated)
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
 //        let x = self.previewLayer.bounds.minX
 //        let y = self.previewLayer.bounds.minY
@@ -84,8 +85,9 @@ import UIKit
     @objc override func viewWillDisappear(_ animated: Bool) {
         print("LEAVING BarcodeScannerViewController")
         super.viewWillDisappear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: animated)
-        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
+        self.navigationController?.setNavigationBarHidden(false, animated: animated)
+//        self.navigationController?.setToolbarHidden(false, animated: animated)
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
         self.barcodeReader.captureSession.stopRunning()
     }
     
