@@ -70,6 +70,12 @@ import UIKit
         self.navigationItem.setHidesBackButton(true, animated: animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+//        let x = self.previewLayer.bounds.minX
+//        let y = self.previewLayer.bounds.minY
+//        let width = self.previewLayer.bounds.maxX
+//        let height = self.previewLayer.bounds.maxY
+//        self.preview.frame = CGRect(x: x, y: y, width: width, height: height)
+        self.previewLayer.clipsToBounds = true
         self.preview.frame = self.previewLayer.bounds
         self.barcodeReader.captureSession.startRunning()
     }
@@ -112,8 +118,11 @@ import UIKit
 
 extension BarcodeScannerViewController {
     
-    /// Dismisses this view controller and returns to `HomeViewController` when tapped.
-    @IBAction func cancelButtonTapped(_ sender: UIButton) {
+    
+    
+    
+//    /// Dismisses this view controller and returns to `HomeViewController` when tapped.
+    @IBAction func cancelButtonTapped(_ sender: UIBarButtonItem) {
         print("DISMISS BUTTON TAPPED")
         self.navigationController?.popViewController(animated: true)
     }
