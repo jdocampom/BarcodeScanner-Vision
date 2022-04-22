@@ -169,7 +169,7 @@
                             </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="V4k-wT-ePO"/>
-                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" red="0.082352941176470587" green="0.066666666666666666" blue="0.078431372549019607" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                         <constraints>
                             <constraint firstItem="atd-p3-02B" firstAttribute="top" secondItem="V4k-wT-ePO" secondAttribute="top" id="F6b-cJ-MSo"/>
                             <constraint firstItem="atd-p3-02B" firstAttribute="leading" secondItem="V4k-wT-ePO" secondAttribute="leading" id="FLg-KB-44d"/>
