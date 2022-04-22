@@ -22,7 +22,7 @@ import UIKit
     lazy var dictionaryFromBarcodeData = [String: String]()
     /// Barcode Reader object instance.
     lazy var barcodeReader = BarcodeReader()
-    /// Property than indicates selected video orientation.
+    /// Property that indicates selected video orientation.
     lazy var videoOrientation: AVCaptureVideoOrientation = .portrait
     /// Parent View Controller. In this case, it is HomeViewController.
     lazy var parentVC = HomeViewController()

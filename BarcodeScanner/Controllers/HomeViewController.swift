@@ -84,7 +84,7 @@ extension HomeViewController {
          if segue.identifier == "scannerButtonTapped" {
              let destination = segue.destination as! BarcodeScannerViewController
              destination.dictionaryFromBarcodeData = self.parsedData
-             destination.videoOrientation = .portrait
+             destination.videoOrientation = .landscapeRight
              destination.parentVC = self
          }
      }
