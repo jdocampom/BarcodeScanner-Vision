@@ -62,6 +62,8 @@ enum ScannerContext {
         DispatchQueue.main.async {
             let device = AVCaptureDevice.default(for: .video)!
             let cameraInput = try! AVCaptureDeviceInput(device: device)
+            try? device.lockForConfiguration()
+            device.focusPointOfInterest = CGPoint(x: 0.5, y: 0.5)
             self.captureSession.addInput(cameraInput)
         }
     }
