@@ -78,7 +78,6 @@ extension HomeViewController {
          if segue.identifier == "scannerButtonTapped" {
              let destination = segue.destination as! BarcodeScannerViewController
              destination.dictionaryFromBarcodeData = self.parsedData
-             destination.scannerContext = .luggageTag
              destination.parentVC = self
          }
      }

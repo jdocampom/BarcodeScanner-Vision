@@ -11,7 +11,7 @@ import Vision
 
 /// Context of how the scanner will be used on a given situation. For example, if it will be used to scan boarding passes or lugagge tags.
 enum ScannerContext {
-    case boardingPass, luggageTag, clientInventory
+    case boardingPass, luggageTag
 }
 
 /// An object that performs barcode scanning and data validation for PDF417, Aztec, QR, Code-128 and Code-39 formats.
@@ -47,8 +47,8 @@ enum ScannerContext {
         return preview
     }()
     
-
-// MARK: - Camera Methods
+    
+    // MARK: - Camera Methods
     
     /// Setup Barcode Reader AVCaptureSession,
     @objc func configureSession() {
@@ -63,6 +63,7 @@ enum ScannerContext {
             let device = AVCaptureDevice.default(for: .video)!
             let cameraInput = try! AVCaptureDeviceInput(device: device)
             try? device.lockForConfiguration()
+            device.focusMode = .autoFocus
             device.focusPointOfInterest = CGPoint(x: 0.5, y: 0.5)
             self.captureSession.addInput(cameraInput)
         }
@@ -90,7 +91,7 @@ enum ScannerContext {
         }
         if let barcode = self.extractDataFromBarcode(fromFrame: frame, for: self.scannerContext) {
             DispatchQueue.main.async { [self] in
-                self.dictionaryFromBarcodeData = session.processBarcodeStringData(from: barcode, for: self.scannerContext)
+                self.dictionaryFromBarcodeData = session.processBarcodeStringData(from: barcode)
                 print("🔍 EXTRACTED DICTIONARY 🔍 \n\(self.dictionaryFromBarcodeData)")
                 print("🔍 EXTRACTED BARCODE STRING (WHATS IN BETWEEN ><) 🔍 \n>\(barcode)<")
                 self.validationArray.append(barcode)
@@ -103,7 +104,7 @@ enum ScannerContext {
         }
     }
     
-// MARK: - Validation Methods
+    // MARK: - Validation Methods
     
     /// Method that extracts the string representation for a given barcode thats being scanned with the device's Wide Angle camera.
     /// - Parameters:
@@ -113,41 +114,43 @@ enum ScannerContext {
     /// - Returns: String representation of a ba
     func extractDataFromBarcode(fromFrame frame: CVImageBuffer, for context: ScannerContext = .boardingPass) -> String? {
         let barcodeRequest = VNDetectBarcodesRequest()
-        var contextSymbologies = [VNBarcodeSymbology]()
-        switch context {
-        case .boardingPass:
-            contextSymbologies = [.aztec, .pdf417, .qr]
-        case .luggageTag:
-            contextSymbologies = [.code128, .code39]
-        case .clientInventory:
-            contextSymbologies = [.code128, .code39]
-        }
-        barcodeRequest.symbologies = contextSymbologies
+        let supportedSymbologies: [VNBarcodeSymbology] = [.aztec, .pdf417, .qr, .code128, .code39]
+        barcodeRequest.symbologies = supportedSymbologies
         try? self.sequenceHandler.perform([barcodeRequest], on: frame)
         guard let results = barcodeRequest.results, let firstBarcode = results.first?.payloadStringValue else {
             return nil
         }
+        guard let barcodeType = results.first?.symbology.rawValue else {
+            return nil
+        }
+        print("⚠️ TYPE OF BARCODE DETECTED ⚠️ \n\(barcodeType)")
+        switch barcodeType {
+        case "VNBarcodeSymbologyCode128", "VNBarcodeSymbologyCode39":
+            self.scannerContext = .luggageTag
+        case "VNBarcodeSymbologyQR", "VNBarcodeSymbologyPDF417", "VNBarcodeSymbologyAztec":
+            self.scannerContext = .boardingPass
+        default:
+            self.scannerContext = .boardingPass
+        }
         return firstBarcode
     }
+    
     
     /// Method that parses a given String from a 2D barcode into a dictionary with human-readable information from the barcode.
     /// - Parameter string: String contents of a 2D barcode. Only Aztec, PDF417 or QR are currently supported.
     /// - Returns: String: String dictionary with a human-readable representation of the string contents of a 2D barcode. This dictionary
     /// will be used to populate the main TableView.
-    func processBarcodeStringData(from string: String, for context: ScannerContext = .boardingPass) -> [String: String]  {
+    func processBarcodeStringData(from string: String) -> [String: String]  {
         let formattedString = string.trimmingCharacters(in: .whitespaces).uppercased()
         var dictionary = [String: String]()
         var range = (startIndex: 0, endIndex: 0)
         var keys = [String]()
         var values = [Int]()
-        switch context {
+        switch self.scannerContext {
         case .boardingPass:
             keys = ["format", "passenger_name", "e_ticket_indicator", "pnr_address", "origin_station_iata", "destination_station_iata", "carrier_code", "flight_number", "julian_date", "fare_code", "seat_number", "security_number", "passenger_status"]
             values = [2, 20, 1, 7, 3, 3, 3, 5, 3, 1, 4, 5, 1]
         case .luggageTag:
-            keys = ["airline_id", "bag_id"]
-            values = [4, 6]
-        case .clientInventory:
             keys = ["airline_id", "bag_id"]
             values = [4, 6]
         }
@@ -163,7 +166,7 @@ enum ScannerContext {
     /// Checks if the last 5 elements of a given array are identical given that this array has more than 10 elements.
     /// - Parameter array: Array that contains the string representation of the barcodes scanned.
     /// - Returns: Boolean flag that allows either to carry on with the application or retry scanning automatically.
-    @objc func validateBarcodeReading(with array: [String]) -> Bool {
+    func validateBarcodeReading(with array: [String]) -> Bool {
         print("⚠️ STARTING VALIDATION ⚠️")
         print("VALIDATION ARRAY LENGTH: \(array.count)")
         var didPassValidation = false
