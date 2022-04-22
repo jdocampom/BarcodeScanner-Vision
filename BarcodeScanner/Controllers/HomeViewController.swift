@@ -17,7 +17,7 @@ import UIKit
     @IBOutlet weak var scanButton: UIBarButtonItem!
     /// Toolbar located at the bottom where the Scan Button is located at.
     @IBOutlet weak var bottomToolbar: UIToolbar!
-    
+        
     /// Dictionary that populates the tableView. By default it contains all the keys and empty strings as the value for each key.
     lazy var parsedData: [String: String] = [
         "format"                    : "",
@@ -50,7 +50,6 @@ import UIKit
     @objc override func viewWillAppear(_ animated: Bool) {
         print("ENTERING BarcodeScannerViewController")
         super.viewWillAppear(animated)
-//        self.navigationController?.setToolbarHidden(false, animated: animated)
         self.navigationItem.setHidesBackButton(true, animated: false)
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
         setNeedsStatusBarAppearanceUpdate()

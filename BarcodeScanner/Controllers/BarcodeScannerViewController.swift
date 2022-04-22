@@ -33,7 +33,7 @@ import UIKit
     // MARK: - Barcode Scanner View Controller Lifecycle Methods
     
     /// Called immediately before any BarcodeScannerViewControllerinstance is deallocated from memory.
-    @objc deinit {
+    deinit {
         self.barcodeReader.extractedStringFromBarcode = ""
         self.barcodeReader.dictionaryFromBarcodeData = [String: String]()
         self.barcodeReader.captureSession.stopRunning()
@@ -82,8 +82,6 @@ import UIKit
         self.barcodeReader.configureSession()
     }
     
-    
-    
     /// Called when the view is about to made visible.
     @objc override func viewWillAppear(_ animated: Bool) {
         print("ENTERING BarcodeScannerViewController")
@@ -105,6 +103,7 @@ import UIKit
 //        self.navigationController?.setToolbarHidden(false, animated: animated)
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
         self.barcodeReader.captureSession.stopRunning()
+        self.removeFromParent()
     }
     
     /// Called just after the view controller's view's layoutSubviews method is invoked.
@@ -125,9 +124,10 @@ import UIKit
     ///   - connection: A connection between a specific pair of capture input and capture output objects in a capture session.
     @objc func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         self.barcodeReader.videoOrientation = self.videoOrientation
-        self.barcodeReader.rootClassCaptureOutput(output, didOutput: sampleBuffer, from: connection) {data in
-            self.parentVC.parsedData = data
-            self.navigationController?.popViewController(animated: true)
+        self.barcodeReader.rootClassCaptureOutput(output, didOutput: sampleBuffer, from: connection) { [weak self] data in
+            self?.parentVC.parsedData = data
+            self?.navigationController?.popViewController(animated: true)
+//            self.removeFromParent()
         }
     }
     

@@ -18,9 +18,9 @@ enum ScannerContext {
 @objc class BarcodeReader: NSObject {
     
     ///Validation
-    var validationTarget: Int32 = 5
+    let validationTarget: Int32 = 3
     ///Validation
-    var minimunLengthOfValidationArray: Int32 = 10
+    let minimunLengthOfValidationArray: Int32 = 5
     /// Camera orientation. By default its portrait since auto-rotate is not supported in the app.
     var isPortraitDefaultOrientarion = true
     /// Context of how the scanner will be used on a given situation. For example, if it will be used to scan boarding passes or lugagge tags.
@@ -50,6 +50,12 @@ enum ScannerContext {
         return preview
     }()
     
+    deinit {
+        self.captureSession.stopRunning()
+        self.dictionaryFromBarcodeData = [String: String]()
+        self.validationArray = [String]()
+        self.extractedStringFromBarcode = ""
+    }
     
     // MARK: - Camera Methods
     
@@ -128,7 +134,6 @@ enum ScannerContext {
         guard let barcodeType = results.first?.symbology.rawValue else {
             return nil
         }
-        print("⚠️ TYPE OF BARCODE DETECTED ⚠️ \n\(barcodeType)")
         switch barcodeType {
         case "VNBarcodeSymbologyCode128", "VNBarcodeSymbologyCode39":
             self.scannerContext = .luggageTag
@@ -139,7 +144,6 @@ enum ScannerContext {
         }
         return firstBarcode
     }
-    
     
     /// Method that parses a given String from a 2D barcode into a dictionary with human-readable information from the barcode.
     /// - Parameter string: String contents of a 2D barcode. Only Aztec, PDF417 or QR are currently supported.
