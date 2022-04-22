@@ -25,6 +25,8 @@ import UIKit
     /// A Core Animation layer that displays the video as it’s captured by the device's Wide Angle camera.
     /// Neither Telephoto or Ultra Wide Angle cameras are currently supported due to compatibility reasons.
     lazy var preview = barcodeReader.preview
+    /// Context of how the scanner will be used on a given situation. For example, if it will be used to scan boarding passes or lugagge tags.
+    var scannerContext: ScannerContext = .boardingPass
     
     // MARK: - Barcode Scanner View Controller Lifecycle Methods
     
@@ -98,6 +100,7 @@ import UIKit
     ///   - sampleBuffer: An object that models a buffer of media data.
     ///   - connection: A connection between a specific pair of capture input and capture output objects in a capture session.
     @objc func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        self.barcodeReader.scannerContext = self.scannerContext
         self.barcodeReader.rootClassCaptureOutput(output, didOutput: sampleBuffer, from: connection) {data in
             self.parentVC.parsedData = data
             self.navigationController?.popViewController(animated: true)

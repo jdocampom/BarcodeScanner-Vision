@@ -78,6 +78,7 @@ extension HomeViewController {
          if segue.identifier == "scannerButtonTapped" {
              let destination = segue.destination as! BarcodeScannerViewController
              destination.dictionaryFromBarcodeData = self.parsedData
+             destination.scannerContext = .luggageTag
              destination.parentVC = self
          }
      }
@@ -94,7 +95,7 @@ extension HomeViewController: UITableViewDataSource {
     
     @objc func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "parsedDataCell", for: indexPath) as! ParsedDataCell
-        cell.keyLabel.text = Array(parsedData.keys)[indexPath.row].capitalized.replacingOccurrences(of: "_", with: " ").replacingOccurrences(of: "Iata", with: "IATA").replacingOccurrences(of: "Pnr", with: "PNR")
+        cell.keyLabel.text = Array(parsedData.keys)[indexPath.row].capitalized.replacingOccurrences(of: "_", with: " ").replacingOccurrences(of: "Iata", with: "IATA").replacingOccurrences(of: "Pnr", with: "PNR").replacingOccurrences(of: "Id", with: "ID")
         cell.valueTextField.text = Array(parsedData.values)[indexPath.row].uppercased()
         cell.selectionStyle = .none
         return cell

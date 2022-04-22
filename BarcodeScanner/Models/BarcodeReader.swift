@@ -81,14 +81,14 @@ enum ScannerContext {
     ///   - sampleBuffer: An object that models a buffer of media data.
     ///   - connection: A connection between a specific pair of capture input and capture output objects in a capture session.
     @objc func rootClassCaptureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection, onSuccess: @escaping ([String: String])-> Void ) {
-        let session = BarcodeReader()
+        let session = self
         guard let frame = CMSampleBufferGetImageBuffer(sampleBuffer) else {
             debugPrint("❌ ERROR: UNABLE TO GET IMAGE FROM SAMPLE BUFFER ❌")
             return
         }
-        if let barcode = self.extractDataFromBarcode(fromFrame: frame, for: scannerContext) {
+        if let barcode = self.extractDataFromBarcode(fromFrame: frame, for: self.scannerContext) {
             DispatchQueue.main.async { [self] in
-                self.dictionaryFromBarcodeData = session.process2DBarcodeStringDataInFormatM(from: barcode)
+                self.dictionaryFromBarcodeData = session.processBarcodeStringData(from: barcode, for: self.scannerContext)
                 print("🔍 EXTRACTED DICTIONARY 🔍 \n\(self.dictionaryFromBarcodeData)")
                 print("🔍 EXTRACTED BARCODE STRING (WHATS IN BETWEEN ><) 🔍 \n>\(barcode)<")
                 self.validationArray.append(barcode)
@@ -132,12 +132,23 @@ enum ScannerContext {
     /// - Parameter string: String contents of a 2D barcode. Only Aztec, PDF417 or QR are currently supported.
     /// - Returns: String: String dictionary with a human-readable representation of the string contents of a 2D barcode. This dictionary
     /// will be used to populate the main TableView.
-    @objc func process2DBarcodeStringDataInFormatM(from string: String) -> [String: String]  {
+    func processBarcodeStringData(from string: String, for context: ScannerContext = .boardingPass) -> [String: String]  {
         let formattedString = string.trimmingCharacters(in: .whitespaces).uppercased()
         var dictionary = [String: String]()
         var range = (startIndex: 0, endIndex: 0)
-        let keys = ["format", "passenger_name", "e_ticket_indicator", "pnr_address", "origin_station_iata", "destination_station_iata", "carrier_code", "flight_number", "julian_date", "fare_code", "seat_number", "security_number", "passenger_status"]
-        let values = [2, 20, 1, 7, 3, 3, 3, 5, 3, 1, 4, 5, 1]
+        var keys = [String]()
+        var values = [Int]()
+        switch context {
+        case .boardingPass:
+            keys = ["format", "passenger_name", "e_ticket_indicator", "pnr_address", "origin_station_iata", "destination_station_iata", "carrier_code", "flight_number", "julian_date", "fare_code", "seat_number", "security_number", "passenger_status"]
+            values = [2, 20, 1, 7, 3, 3, 3, 5, 3, 1, 4, 5, 1]
+        case .luggageTag:
+            keys = ["airline_id", "bag_id"]
+            values = [4, 6]
+        case .clientInventory:
+            keys = ["airline_id", "bag_id"]
+            values = [4, 6]
+        }
         for i in 0..<keys.count {
             range.endIndex += values[i]
             dictionary[keys[i]] = formattedString.subString(from: range.startIndex, to: range.endIndex).replacingOccurrences(of: " ", with: "")
